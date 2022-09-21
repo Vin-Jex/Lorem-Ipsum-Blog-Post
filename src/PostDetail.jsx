@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 // Feting data
 async function fetchComments(postId) {
   const response = await fetch(
-    `https://jsonplaceholder.typykyu78oy78icode.com/comments?postId=${postId}`
+    `https://jsonplaceholder.typicode.com/comments?postId=${postId}`
   );
   return response.json();
 }
@@ -28,7 +28,7 @@ async function updatePost(postId) {
 
 export function PostDetail({ post }) {
   // replace with useQuery
-  const { data, isError, error, isLoading } = useQuery("comments", () => {
+  const { data, isError, error, isLoading } = useQuery(["comments", post.id], () => {
     return fetchComments(post.id)
   });
 
