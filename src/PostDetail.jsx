@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 // Feting data
 async function fetchComments(postId) {
@@ -32,6 +32,14 @@ export function PostDetail({ post }) {
     return fetchComments(post.id)
   });
 
+
+
+  const deleteMutation = useMutation((postId) => deletePost(postId))
+
+  const updateMutation = useMutation((postId) => {
+    updatePost(postId)
+  })
+
   if(isLoading) return <h2>Loading...</h2>
   if(isError) return <>
       <h2>Oops, something went wrong!</h2>
@@ -39,17 +47,40 @@ export function PostDetail({ post }) {
   </>
   
 
+
   return (
     <>
       <h3 style={{ color: "blue" }}>{post.title}</h3>
-      <button>Delete</button> <button>Update title</button>
-      <p>{post.body}</p>
-      <h4>Comments</h4>
-      {data.map((comment) => (
-        <li key={comment.id}>
-          {comment.email}: {comment.body}
-        </li>
-      ))}
+        
+      
+      {deleteMutation.isError && <div style={{color: "red"}}> Error deleting post</div>}
+      {updateMutation.isError && <div style={{color: "red"}}> Error updating post</div>}
+
+      {deleteMutation.isLoading && <div style={{color: "purple"}}> Deleting </div>}
+      {updateMutation.isLoading && <div style={{color: "purple"}}>Updating...</div>}
+
+      {deleteMutation.isSuccess && 
+        <div style={{color: "purple"}}> Post deleted </div>
+      }
+      {updateMutation.isSuccess && <div style={{color: "blue"}}> Post updated</div>}
+      
+      <button 
+        onClick={() => deleteMutation.mutate(post.id)}
+      >
+        Delete
+      </button>
+        
+      <button
+        onClick={() => updateMutation.mutate(post.id)}
+      >
+        Update title</button>
+        <p>{post.body}</p>
+        <h4>Comments</h4>
+        {data.map((comment) => (
+          <li key={comment.id}>
+            {comment.email}: {comment.body}
+          </li>
+        ))}
     </>
   );
 }
